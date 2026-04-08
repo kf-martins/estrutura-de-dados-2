@@ -31,6 +31,9 @@ No *buscarId(No *raiz, int id);
 int inserirPai(No *individuo, No *novoPai);
 int inserirMae(No *individuo, No *novaMae);
 int inserirIrmao(No *individuo, No *novoIrmao, int mesmosPais);
+int removerPai(No *individuo);
+int removerMae(No *individuo);
+int removerIrmao(No *raiz, int idIrmao);
 
 void imprimirArvoreGenealogica(No *raiz);
 void imprimirDadosPessoa(No *pessoa);

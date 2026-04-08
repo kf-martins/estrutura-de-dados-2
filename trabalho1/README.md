@@ -75,7 +75,7 @@ O sistema deve implementar as seguintes operações:
 
 ## 📦 Entrega
 
-- 📅 Data: **06/04**
+- 📅 Data: **08/04**
 - 📌 Entregar:
   - Código-fonte completo
   - Apresentação do funcionamento

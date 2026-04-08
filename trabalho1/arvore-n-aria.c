@@ -15,7 +15,7 @@ Date data(int dia, int mes, int ano) {
 }
 
 int mesmoNome(No *no, char *nome, char *sobrenome) {
-    if (no == NULL || nome == NULL || sobrenome == NULL)
+    if (no == NULL || nome == NULL || sobrenome == NULL) 
         return 0;
     return strcmp(no->nome, nome) == 0 && strcmp(no->sobrenome, sobrenome) == 0;
 }
@@ -78,10 +78,6 @@ No *buscarId(No *raiz, int id) {
 }
 
 void liberarNo(No *no) {
-    No *pai;
-    No *mae;
-    No *proximoIrmao;
-
     if (no == NULL)
         return;
 
@@ -91,17 +87,10 @@ void liberarNo(No *no) {
     if (no->refQuant > 0)
         return;
 
-    pai = no->pai;
-    mae = no->mae;
-    proximoIrmao = no->proximoIrmao;
+    atribuirReferencia(&no->pai, NULL);
+    atribuirReferencia(&no->mae, NULL);
+    atribuirReferencia(&no->proximoIrmao, NULL);
 
-    no->pai = NULL;
-    no->mae = NULL;
-    no->proximoIrmao = NULL;
-
-    liberarNo(pai);
-    liberarNo(mae);
-    liberarNo(proximoIrmao);
     free(no);
 }
 
@@ -111,12 +100,10 @@ void reterNo(No *no) {
 }
 
 void atribuirReferencia(No **campo, No *novoValor) {
-    No *valorAntigo;
-
     if (campo == NULL)
         return;
 
-    valorAntigo = *campo;
+    No *valorAntigo = *campo;
     if (valorAntigo == novoValor)
         return;
 
@@ -127,6 +114,33 @@ void atribuirReferencia(No **campo, No *novoValor) {
 
     if (valorAntigo != NULL)
         liberarNo(valorAntigo);
+}
+
+int buscaIrmaoAux(No *raiz, int idIrmao, No **anterior, No **alvo) {
+    if (raiz == NULL || anterior == NULL || alvo == NULL)
+        return 0;
+
+    No *prev = raiz;
+    No *atual = raiz->proximoIrmao;
+
+    while (atual != NULL) {
+        if (atual->id == idIrmao) {
+            *anterior = prev;
+            *alvo = atual;
+            return 1;
+        }
+
+        prev = atual;
+        atual = atual->proximoIrmao;
+    }
+
+    if (buscaIrmaoAux(raiz->pai, idIrmao, anterior, alvo))
+        return 1;
+
+    if (buscaIrmaoAux(raiz->mae, idIrmao, anterior, alvo))
+        return 1;
+
+    return buscaIrmaoAux(raiz->proximoIrmao, idIrmao, anterior, alvo);
 }
 
 int inserirPai(No *individuo, No *novoPai) {
@@ -159,6 +173,44 @@ int inserirIrmao(No *individuo, No *novoIrmao, int mesmosPais) {
         atual = atual->proximoIrmao;
 
     atribuirReferencia(&atual->proximoIrmao, novoIrmao);
+    return 1;
+}
+
+int removerPai(No *individuo) {
+    if (individuo == NULL || individuo->pai == NULL)
+        return 0;
+
+    atribuirReferencia(&individuo->pai, NULL);
+    return 1;
+}
+
+int removerMae(No *individuo) {
+    if (individuo == NULL || individuo->mae == NULL)
+        return 0;
+
+    atribuirReferencia(&individuo->mae, NULL);
+    return 1;
+}
+
+int removerIrmao(No *raiz, int idIrmao) {
+    if (raiz == NULL)
+        return 0;
+
+    No *anterior = NULL;
+    No *alvo = NULL;
+
+    if (!buscaIrmaoAux(raiz, idIrmao, &anterior, &alvo))
+        return 0;
+
+    reterNo(alvo);
+
+    No *proximoDoAlvo = alvo->proximoIrmao;
+    
+    atribuirReferencia(&anterior->proximoIrmao, proximoDoAlvo);
+    atribuirReferencia(&alvo->proximoIrmao, NULL);
+
+    liberarNo(alvo);
+
     return 1;
 }
 

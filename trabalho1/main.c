@@ -6,10 +6,13 @@ void ShowMenu() {
     printf("1 - Inserir Irmao\n");
     printf("2 - Inserir Mae\n");
     printf("3 - Inserir Pai\n");
-    printf("4 - Imprimir Arvore Completa\n");
-    printf("5 - Buscar e Imprimir Pessoa por ID\n");
-    printf("6 - Buscar e Imprimir Pessoa por Nome\n");
-    printf("7 - Sair\n");
+    printf("4 - Remover Irmao\n");
+    printf("5 - Remover Mae\n");
+    printf("6 - Remover Pai\n");
+    printf("7 - Imprimir Arvore Completa\n");
+    printf("8 - Buscar e Imprimir Pessoa por ID\n");
+    printf("9 - Buscar e Imprimir Pessoa por Nome\n");
+    printf("10 - Sair\n");
     printf("Escolha uma opcao: ");
 }
 
@@ -25,7 +28,7 @@ No* pedirDadosNovoNo() {
     return criarNo(nome, sobrenome, data(d, m, a));
 }
 
-No* obterOuCriarParente(No *raiz, const char *tipoParente) {
+No* obterOuCriarParente(No *raiz, char *tipoParente) {
     int jaExiste;
     int idParente;
     No *parente;
@@ -67,11 +70,12 @@ int main(void) {
     
     int opcao = 0;
     int idPessoa;
+    int idIrmaoRemover;
     int mesmosPais;
     char nomeBusca[26], sobrenomeBusca[51];
     No *referencia, *novo;
 
-    while (opcao != 7) {
+    while (opcao != 10) {
         ShowMenu();
         scanf("%d", &opcao);
 
@@ -116,14 +120,55 @@ int main(void) {
                     break;
             }
         } else if (opcao == 4) {
+            printf("ID do irmao a remover: ");
+            scanf("%d", &idIrmaoRemover);
+
+            if (idIrmaoRemover == raiz->id) {
+                printf("Nao e permitido remover a raiz por esta opcao.\n");
+                continue;
+            }
+
+            if (removerIrmao(raiz, idIrmaoRemover))
+                printf("Irmao removido com sucesso.\n");
+            else
+                printf("Falha ao remover irmao. Verifique o ID informado.\n");
+        } else if (opcao == 5) {
+            printf("\nID da pessoa para remover a mae: ");
+            scanf("%d", &idPessoa);
+            referencia = buscarId(raiz, idPessoa);
+
+            if (referencia == NULL) {
+                printf("Erro: Pessoa com ID #%d nao encontrada!\n", idPessoa);
+                continue;
+            }
+
+            if (removerMae(referencia))
+                printf("Mae removida com sucesso.\n");
+            else
+                printf("Falha ao remover mae.\n");
+        } else if (opcao == 6) {
+            printf("\nID da pessoa para remover o pai: ");
+            scanf("%d", &idPessoa);
+            referencia = buscarId(raiz, idPessoa);
+
+            if (referencia == NULL) {
+                printf("Erro: Pessoa com ID #%d nao encontrada!\n", idPessoa);
+                continue;
+            }
+
+            if (removerPai(referencia))
+                printf("Pai removido com sucesso.\n");
+            else
+                printf("Falha ao remover pai.\n");
+        } else if (opcao == 7) {
             printf("\n--- ARVORE GENEALOGICA ---\n");
             imprimirArvoreGenealogica(raiz);
-        } else if (opcao == 5) {
+        } else if (opcao == 8) {
             printf("\nID da pessoa a buscar: ");
             scanf("%d", &idPessoa);
             referencia = buscarId(raiz, idPessoa);
             imprimirDadosPessoa(referencia);
-        } else if (opcao == 6) {
+        } else if (opcao == 9) {
             printf("\nNome da pessoa a buscar: ");
             scanf("%25s", nomeBusca);
             printf("Sobrenome da pessoa a buscar: ");
@@ -131,7 +176,7 @@ int main(void) {
 
             referencia = buscarFamiliar(raiz, nomeBusca, sobrenomeBusca);
             imprimirDadosPessoa(referencia);
-        } else if (opcao == 7) {
+        } else if (opcao == 10) {
             printf("Saindo e liberando memoria...\n");
         } else {
             printf("Opcao invalida!\n");
