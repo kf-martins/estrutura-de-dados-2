@@ -6,13 +6,15 @@ void ShowMenu() {
     printf("1 - Inserir Irmao\n");
     printf("2 - Inserir Mae\n");
     printf("3 - Inserir Pai\n");
-    printf("4 - Imprimir Arvore\n");
-    printf("5 - Sair\n");
+    printf("4 - Imprimir Arvore Completa\n");
+    printf("5 - Buscar e Imprimir Pessoa por ID\n");
+    printf("6 - Buscar e Imprimir Pessoa por Nome\n");
+    printf("7 - Sair\n");
     printf("Escolha uma opcao: ");
 }
 
 No* pedirDadosNovoNo() {
-    char nome[50], sobrenome[200];
+    char nome[26], sobrenome[51];
     int d, m, a;
     printf("Nome: ");
     scanf("%s", nome);
@@ -23,58 +25,113 @@ No* pedirDadosNovoNo() {
     return criarNo(nome, sobrenome, data(d, m, a));
 }
 
+No* obterOuCriarParente(No *raiz, const char *tipoParente) {
+    int jaExiste;
+    int idParente;
+    No *parente;
+
+    printf("Esse %s ja esta na arvore? (1=Sim, 0=Nao): ", tipoParente);
+    scanf("%d", &jaExiste);
+
+    if (jaExiste) {
+        printf("Informe o ID do %s: ", tipoParente);
+        scanf("%d", &idParente);
+
+        parente = buscarId(raiz, idParente);
+        if (parente == NULL) {
+            printf("Erro: %s com ID #%d nao encontrado(a).\n", tipoParente, idParente);
+            return NULL;
+        }
+
+        return parente;
+    }
+
+    printf("Dados do novo(a) %s:\n", tipoParente);
+    return pedirDadosNovoNo();
+}
+
 int main(void) {
     printf("Configuracao inicial da arvore (Raiz):\n");
     No *raiz = pedirDadosNovoNo();
+    printf("ID da raiz: #%d\n\n", raiz->id);
+    
     printf("Insira a mae da raiz:\n");
     No *mae_raiz = pedirDadosNovoNo();
     inserirMae(raiz, mae_raiz);
+    printf("Mae inserida com sucesso! ID: #%d\n\n", mae_raiz->id);
+    
     printf("Insira o pai da raiz:\n");
     No *pai_raiz = pedirDadosNovoNo();
     inserirPai(raiz, pai_raiz);
+    printf("Pai inserido com sucesso! ID: #%d\n\n", pai_raiz->id);
     
     int opcao = 0;
-    char buscaNome[50], buscaSobrenome[50];
+    int idPessoa;
+    int mesmosPais;
+    char nomeBusca[26], sobrenomeBusca[51];
+    No *referencia, *novo;
 
-    while (opcao != 5) {
+    while (opcao != 7) {
         ShowMenu();
         scanf("%d", &opcao);
 
         if (opcao >= 1 && opcao <= 3) {
-            printf("\nDe quem voce deseja inserir o parente?\n");
-            printf("Nome: ");
-            scanf("%s", buscaNome);
-            printf("Sobrenome: ");
-            scanf("%s", buscaSobrenome);
+            printf("\nID da pessoa para inserir o parente: ");
+            scanf("%d", &idPessoa);
 
-            No *referencia = buscarFamiliar(raiz, buscaNome, buscaSobrenome);
+            referencia = buscarId(raiz, idPessoa);
 
             if (referencia == NULL) {
-                printf("Erro: Familiar nao encontrado!\n");
+                printf("Erro: Pessoa com ID #%d nao encontrada!\n", idPessoa);
                 continue;
             }
 
-            printf("Dados do novo parente:\n");
-            No *novo = pedirDadosNovoNo();
-
             switch (opcao) {
                 case 1:
-                    inserirIrmao(referencia, novo);
-                    printf("Irmao inserido com sucesso.\n");
+                    printf("Dados do novo irmao:\n");
+                    novo = pedirDadosNovoNo();
+
+                    printf("Usar mesmos pais da pessoa de referencia? (1=Sim, 0=Nao): ");
+                    scanf("%d", &mesmosPais);
+                    mesmosPais = mesmosPais ? 1 : 0;
+
+                    inserirIrmao(referencia, novo, mesmosPais);
+                    printf("Irmao inserido com sucesso. ID: #%d\n", novo->id);
                     break;
                 case 2:
+                    novo = obterOuCriarParente(raiz, "mae");
+                    if (novo == NULL)
+                        break;
+
                     inserirMae(referencia, novo);
-                    printf("Mae inserida com sucesso.\n");
+                    printf("Mae inserida com sucesso. ID: #%d\n", novo->id);
                     break;
                 case 3:
+                    novo = obterOuCriarParente(raiz, "pai");
+                    if (novo == NULL)
+                        break;
+
                     inserirPai(referencia, novo);
-                    printf("Pai inserido com sucesso.\n");
+                    printf("Pai inserido com sucesso. ID: #%d\n", novo->id);
                     break;
             }
         } else if (opcao == 4) {
             printf("\n--- ARVORE GENEALOGICA ---\n");
             imprimirArvoreGenealogica(raiz);
         } else if (opcao == 5) {
+            printf("\nID da pessoa a buscar: ");
+            scanf("%d", &idPessoa);
+            referencia = buscarId(raiz, idPessoa);
+            imprimirDadosPessoa(referencia);
+        } else if (opcao == 6) {
+            printf("\nNome da pessoa a buscar: ");
+            scanf("%25s", nomeBusca);
+            printf("Sobrenome da pessoa a buscar: ");
+            scanf("%50s", sobrenomeBusca);
+
+            referencia = buscarFamiliar(raiz, nomeBusca, sobrenomeBusca);
+            imprimirDadosPessoa(referencia);
+        } else if (opcao == 7) {
             printf("Saindo e liberando memoria...\n");
         } else {
             printf("Opcao invalida!\n");

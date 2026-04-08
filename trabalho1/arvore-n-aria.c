@@ -61,6 +61,22 @@ No *buscarFamiliar(No *raiz, char *nome, char *sobrenome) {
     return buscarFamiliar(raiz->proximoIrmao, nome, sobrenome);
 }
 
+No *buscarId(No *raiz, int id) {
+    No *p;
+
+    if (raiz == NULL) return NULL;
+
+    if (raiz->id == id) return raiz;
+
+    p = buscarId(raiz->pai, id);
+    if (p != NULL) return p;
+
+    p = buscarId(raiz->mae, id);
+    if (p != NULL) return p;
+
+    return buscarId(raiz->proximoIrmao, id);
+}
+
 void liberarNo(No *no) {
     No *pai;
     No *mae;
@@ -129,13 +145,13 @@ int inserirMae(No *individuo, No *novaMae) {
     return 1;
 }
 
-int inserirIrmao(No *individuo, No *novoIrmao) {
+int inserirIrmao(No *individuo, No *novoIrmao, int mesmosPais) {
     No *atual;
 
     if (individuo == NULL || novoIrmao == NULL) return 0;
 
-    atribuirReferencia(&novoIrmao->pai, NULL);
-    atribuirReferencia(&novoIrmao->mae, NULL);
+    atribuirReferencia(&novoIrmao->pai, mesmosPais ? individuo->pai : NULL);
+    atribuirReferencia(&novoIrmao->mae, mesmosPais ? individuo->mae : NULL);
     atribuirReferencia(&novoIrmao->proximoIrmao, NULL);
 
     atual = individuo;
@@ -193,6 +209,42 @@ void imprimirArvoreRecursiva(No *raiz, int nivel, int imprimeRaiz, int esconderP
 
 void imprimirArvoreGenealogica(No *raiz) {
     imprimirArvoreRecursiva(raiz, 0, 1, 0, 0);
+}
+
+void imprimirDadosPessoa(No *pessoa) {
+    No *irmao;
+
+    if (pessoa == NULL) {
+        printf("Pessoa nao encontrada!\n");
+        return;
+    }
+
+    printf("\n----- DADOS DA PESSOA -----\n");
+    printf("ID: #%d\n", pessoa->id);
+    printf("Nome: %s %s\n", pessoa->nome, pessoa->sobrenome);
+    printf("Data de Nascimento: %02d/%02d/%04d\n", pessoa->dataNascimento.dia, pessoa->dataNascimento.mes, pessoa->dataNascimento.ano);
+
+    if (pessoa->pai != NULL)
+        printf("Pai: #%d %s %s\n", pessoa->pai->id, pessoa->pai->nome, pessoa->pai->sobrenome);
+    else
+        printf("Pai: (desconhecido)\n");
+
+    if (pessoa->mae != NULL)
+        printf("Mae: #%d %s %s\n", pessoa->mae->id, pessoa->mae->nome, pessoa->mae->sobrenome);
+    else
+        printf("Mae: (desconhecida)\n");
+
+    if (pessoa->proximoIrmao != NULL) {
+        printf("\nIrmaos:\n");
+        irmao = pessoa->proximoIrmao;
+        while (irmao != NULL) {
+            printf("  - #%d %s %s\n", irmao->id, irmao->nome, irmao->sobrenome);
+            irmao = irmao->proximoIrmao;
+        }
+    } else {
+        printf("\nIrmaos: nenhum\n");
+    }
+    printf("\n");
 }
 
 void freeArvore(No *raiz) {
