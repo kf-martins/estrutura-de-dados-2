@@ -12,7 +12,7 @@ void ShowMenu() {
     printf("7 - Imprimir Arvore Completa\n");
     printf("8 - Buscar e Imprimir Pessoa por ID\n");
     printf("9 - Buscar e Imprimir Pessoa por Nome\n");
-    printf("10 - Sair\n");
+    printf("0 - Sair\n");
     printf("Escolha uma opcao: ");
 }
 
@@ -75,7 +75,7 @@ int main(void) {
     char nomeBusca[26], sobrenomeBusca[51];
     No *referencia, *novo;
 
-    while (opcao != 10) {
+    do {
         ShowMenu();
         scanf("%d", &opcao);
 
@@ -119,6 +119,7 @@ int main(void) {
                     printf("Pai inserido com sucesso. ID: #%d\n", novo->id);
                     break;
             }
+            
         } else if (opcao == 4) {
             printf("ID do irmao a remover: ");
             scanf("%d", &idIrmaoRemover);
@@ -132,6 +133,7 @@ int main(void) {
                 printf("Irmao removido com sucesso.\n");
             else
                 printf("Falha ao remover irmao. Verifique o ID informado.\n");
+
         } else if (opcao == 5) {
             printf("\nID da pessoa para remover a mae: ");
             scanf("%d", &idPessoa);
@@ -146,6 +148,7 @@ int main(void) {
                 printf("Mae removida com sucesso.\n");
             else
                 printf("Falha ao remover mae.\n");
+
         } else if (opcao == 6) {
             printf("\nID da pessoa para remover o pai: ");
             scanf("%d", &idPessoa);
@@ -160,14 +163,17 @@ int main(void) {
                 printf("Pai removido com sucesso.\n");
             else
                 printf("Falha ao remover pai.\n");
+
         } else if (opcao == 7) {
             printf("\n--- ARVORE GENEALOGICA ---\n");
             imprimirArvoreGenealogica(raiz);
+
         } else if (opcao == 8) {
             printf("\nID da pessoa a buscar: ");
             scanf("%d", &idPessoa);
             referencia = buscarId(raiz, idPessoa);
             imprimirDadosPessoa(referencia);
+
         } else if (opcao == 9) {
             printf("\nNome da pessoa a buscar: ");
             scanf("%25s", nomeBusca);
@@ -176,12 +182,15 @@ int main(void) {
 
             referencia = buscarFamiliar(raiz, nomeBusca, sobrenomeBusca);
             imprimirDadosPessoa(referencia);
+
         } else if (opcao == 10) {
             printf("Saindo e liberando memoria...\n");
+
         } else {
             printf("Opcao invalida!\n");
         }
-    }
+
+    } while(opcao);
 
     freeArvore(raiz);
     return 0;
