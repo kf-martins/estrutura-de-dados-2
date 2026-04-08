@@ -1,6 +1,10 @@
-# Biblioteca de Arvore Genealogica (N-aria)
+# Arvore Genealogica (N-aria)
 
-Biblioteca em C para representar uma arvore de antecessores (pai/mae) com encadeamento de irmaos.
+Biblioteca em C para representar uma arvore de antecessores (pai/mae) com encadeamento de irmaos. Feito para a disciplina de Estrutura de Dados II da Universidade Estadual de Londrina (UEL). 
+- Professor: Arthur Alexandre Artoni
+- Alunos/autores: 
+    - Kauã Felipe Martins
+    - Leonardo Madeira Alves Pereira
 
 ## Estrutura base
 

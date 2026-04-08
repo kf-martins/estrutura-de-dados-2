@@ -84,12 +84,6 @@ O sistema deve implementar as seguintes operações:
 
 ---
 
-## 🖼️ Exemplo
-
-A estrutura da árvore segue o modelo apresentado na imagem fornecida (`ex1.png`).
-
----
-
 ## 🚀 Objetivo
 
 Praticar:
@@ -97,7 +91,3 @@ Praticar:
 - Estruturas de dados (árvores N-árias)
 - Manipulação de ponteiros/referências
 - Organização de dados hierárquicos
-
----
-
-Boa implementação! 💡
