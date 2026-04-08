@@ -77,23 +77,6 @@ No *buscarId(No *raiz, int id) {
     return buscarId(raiz->proximoIrmao, id);
 }
 
-void liberarNo(No *no) {
-    if (no == NULL)
-        return;
-
-    if (no->refQuant > 0)
-        no->refQuant--;
-
-    if (no->refQuant > 0)
-        return;
-
-    atribuirReferencia(&no->pai, NULL);
-    atribuirReferencia(&no->mae, NULL);
-    atribuirReferencia(&no->proximoIrmao, NULL);
-
-    free(no);
-}
-
 void reterNo(No *no) {
     if (no != NULL)
         no->refQuant++;
@@ -114,6 +97,23 @@ void atribuirReferencia(No **campo, No *novoValor) {
 
     if (valorAntigo != NULL)
         liberarNo(valorAntigo);
+}
+
+void liberarNo(No *no) {
+    if (no == NULL)
+        return;
+
+    if (no->refQuant > 0)
+        no->refQuant--;
+
+    if (no->refQuant > 0)
+        return;
+
+    atribuirReferencia(&no->pai, NULL);
+    atribuirReferencia(&no->mae, NULL);
+    atribuirReferencia(&no->proximoIrmao, NULL);
+
+    free(no);
 }
 
 int buscaIrmaoAux(No *raiz, int idIrmao, No **anterior, No **alvo) {

@@ -27,6 +27,7 @@ No *criarNo(char *nome, char *sobrenome, Date dataNascimento);
 No *inicializar(char *nome, char *sobrenome, Date dataNascimento);
 No *buscarFamiliar(No *raiz, char *nome, char *sobrenome);
 No *buscarId(No *raiz, int id);
+int buscaIrmaoAux(No *raiz, int idIrmao, No **anterior, No **alvo);
 
 int inserirPai(No *individuo, No *novoPai);
 int inserirMae(No *individuo, No *novaMae);
@@ -38,5 +39,8 @@ int removerIrmao(No *raiz, int idIrmao);
 void imprimirArvoreGenealogica(No *raiz);
 void imprimirDadosPessoa(No *pessoa);
 void freeArvore(No *raiz);
+
+void atribuirReferencia(No **campo, No *novoValor);
+void liberarNo(No *no);
 
 #endif
