@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+int proximoId = 1;
+
 Date data(int dia, int mes, int ano) {
     Date d;
     d.dia = dia;
@@ -33,6 +35,8 @@ No *criarNo(char *nome, char *sobrenome, Date dataNascimento) {
     novoNo->pai = NULL;
     novoNo->mae = NULL;
     novoNo->proximoIrmao = NULL;
+    novoNo->id = proximoId++;
+    novoNo->refQuant = 0;
 
     return novoNo;
 }
@@ -57,11 +61,63 @@ No *buscarFamiliar(No *raiz, char *nome, char *sobrenome) {
     return buscarFamiliar(raiz->proximoIrmao, nome, sobrenome);
 }
 
+void liberarNo(No *no) {
+    No *pai;
+    No *mae;
+    No *proximoIrmao;
+
+    if (no == NULL)
+        return;
+
+    if (no->refQuant > 0)
+        no->refQuant--;
+
+    if (no->refQuant > 0)
+        return;
+
+    pai = no->pai;
+    mae = no->mae;
+    proximoIrmao = no->proximoIrmao;
+
+    no->pai = NULL;
+    no->mae = NULL;
+    no->proximoIrmao = NULL;
+
+    liberarNo(pai);
+    liberarNo(mae);
+    liberarNo(proximoIrmao);
+    free(no);
+}
+
+void reterNo(No *no) {
+    if (no != NULL)
+        no->refQuant++;
+}
+
+void atribuirReferencia(No **campo, No *novoValor) {
+    No *valorAntigo;
+
+    if (campo == NULL)
+        return;
+
+    valorAntigo = *campo;
+    if (valorAntigo == novoValor)
+        return;
+
+    if (novoValor != NULL)
+        reterNo(novoValor);
+
+    *campo = novoValor;
+
+    if (valorAntigo != NULL)
+        liberarNo(valorAntigo);
+}
+
 int inserirPai(No *individuo, No *novoPai) {
     if (individuo == NULL || novoPai == NULL)
         return 0;
 
-    individuo->pai = novoPai;
+    atribuirReferencia(&individuo->pai, novoPai);
     return 1;
 }
 
@@ -69,7 +125,7 @@ int inserirMae(No *individuo, No *novaMae) {
     if (individuo == NULL || novaMae == NULL)
         return 0;
 
-    individuo->mae = novaMae;
+    atribuirReferencia(&individuo->mae, novaMae);
     return 1;
 }
 
@@ -78,15 +134,15 @@ int inserirIrmao(No *individuo, No *novoIrmao) {
 
     if (individuo == NULL || novoIrmao == NULL) return 0;
 
-    novoIrmao->pai = individuo->pai;
-    novoIrmao->mae = individuo->mae;
-    novoIrmao->proximoIrmao = NULL;
+    atribuirReferencia(&novoIrmao->pai, NULL);
+    atribuirReferencia(&novoIrmao->mae, NULL);
+    atribuirReferencia(&novoIrmao->proximoIrmao, NULL);
 
     atual = individuo;
     while (atual->proximoIrmao != NULL)
         atual = atual->proximoIrmao;
 
-    atual->proximoIrmao = novoIrmao;
+    atribuirReferencia(&atual->proximoIrmao, novoIrmao);
     return 1;
 }
 
@@ -101,7 +157,7 @@ void imprimirPessoa(char *rotulo, No *pessoa, int nivel) {
         return;
 
     imprimirIndentacao(nivel);
-    printf("%s: %s %s\n", rotulo, pessoa->nome, pessoa->sobrenome);
+    printf("%s: #%d %s %s\n", rotulo, pessoa->id, pessoa->nome, pessoa->sobrenome);
 }
 
 void imprimirArvoreRecursiva(No *raiz, int nivel, int imprimeRaiz, int esconderPai, int esconderMae) {
@@ -136,39 +192,11 @@ void imprimirArvoreRecursiva(No *raiz, int nivel, int imprimeRaiz, int esconderP
 }
 
 void imprimirArvoreGenealogica(No *raiz) {
-    imprimirArvoreRecursiva(raiz, 0, 0, 0, 0);
-}
-
-void desvincularPaisDosIrmaosSeguintes(No *irmao, No *pai, No *mae) {
-    No *atual = irmao;
-
-    while (atual != NULL) {
-        if (atual->pai == pai)
-            atual->pai = NULL;
-        if (atual->mae == mae)
-            atual->mae = NULL;
-        atual = atual->proximoIrmao;
-    }
+    imprimirArvoreRecursiva(raiz, 0, 1, 0, 0);
 }
 
 void freeArvore(No *raiz) {
-    No *pai;
-    No *mae;
-    No *proximoIrmao;
-
-    if (raiz == NULL)
-        return;
-
-    pai = raiz->pai;
-    mae = raiz->mae;
-    proximoIrmao = raiz->proximoIrmao;
-
-    if (proximoIrmao != NULL)
-        desvincularPaisDosIrmaosSeguintes(proximoIrmao, pai, mae);
-
-    freeArvore(pai);
-    freeArvore(mae);
-    freeArvore(proximoIrmao);
-    free(raiz);
+    reterNo(raiz);
+    liberarNo(raiz);
 }
 

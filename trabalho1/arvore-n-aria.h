@@ -12,6 +12,9 @@ typedef struct No {
   struct No *pai;
   struct No *mae;
 
+  int id;
+  unsigned int refQuant; // Quantidade de outros nós que apontam para o nó
+
   Date dataNascimento;
 
   char nome[21];
