@@ -1,103 +1,72 @@
-# 🌳 Árvore Genealógica de Antecessores
+# Biblioteca de Arvore Genealogica (N-aria)
 
-## 📌 Descrição do Projeto
+Biblioteca em C para representar uma arvore de antecessores (pai/mae) com encadeamento de irmaos.
 
-Este projeto consiste na implementação de uma **árvore genealógica de antecessores**, onde um indivíduo (definido como raiz) possui ligações com seus **pais**, e não com seus filhos.
+## Estrutura base
 
-A estrutura permite expandir a árvore indefinidamente (limitada apenas pela memória), incluindo pais, avós, bisavós, além de irmãos em diferentes níveis.
+- Estrutura `No`: [arvore-n-aria.h#L10](arvore-n-aria.h#L10)
+- Estrutura `Date`: [arvore-n-aria.h#L4](arvore-n-aria.h#L4)
 
----
+## Funcoes publicas
 
-## 🧩 Estrutura da Árvore
+### Criacao e busca
 
-![Exemplo imagem](./ex1.png)
+- [data](arvore-n-aria.c#L8): cria uma data (`dia/mes/ano`).
+- [criarNo](arvore-n-aria.c#L23): aloca e inicializa um no (com `id` automatico).
+- [inicializar](arvore-n-aria.c#L44): atalho para criar a raiz.
+- [buscarFamiliar](arvore-n-aria.c#L48): busca por `nome + sobrenome`.
+- [buscarId](arvore-n-aria.c#L64): busca por `id`.
 
-- A árvore é do tipo **N-ária**.
-- Cada nó representa um indivíduo.
-- A árvore cresce no sentido dos **antecessores (pais)**.
+### Insercoes
 
----
+- [inserirPai](arvore-n-aria.c#L146): atribui/troca o pai de um individuo.
+- [inserirMae](arvore-n-aria.c#L154): atribui/troca a mae de um individuo.
+- [inserirIrmao](arvore-n-aria.c#L162): adiciona irmao ao final da lista de irmaos. `mesmosPais=1` herda pai/mae do individuo base.
 
-## 👤 Estrutura do Nó (Node)
+### Remocoes
 
-Cada indivíduo deve conter os seguintes atributos:
+- [removerPai](arvore-n-aria.c#L179): remove o vinculo de pai.
+- [removerMae](arvore-n-aria.c#L187): remove o vinculo de mae.
+- [removerIrmao](arvore-n-aria.c#L195): remove um irmao por `id` na arvore toda.
+- [buscaIrmaoAux](arvore-n-aria.c#L119): auxiliar para achar `anterior + alvo` na remocao de irmao.
 
-- **Nome**
-- **Sobrenome**
-- **Data de nascimento**
-- **Pai**
-- **Mãe**
-- **Irmãos** (lista de indivíduos)
+### Impressao e liberacao
 
-> 🔧 Você pode adicionar outros atributos, caso julgue necessário para a implementação.
+- [imprimirArvoreGenealogica](arvore-n-aria.c#L262): imprime a arvore completa.
+- [imprimirDadosPessoa](arvore-n-aria.c#L266): imprime os dados de uma pessoa.
+- [freeArvore](arvore-n-aria.c#L302): libera a estrutura a partir da raiz.
 
----
+## Como funciona a gerencia de memoria (reterNo/liberarNo/atribuirReferencia)
 
-## ⚙️ Funcionalidades Obrigatórias
+Funcoes envolvidas:
 
-O sistema deve implementar as seguintes operações:
+- [reterNo](arvore-n-aria.c#L97)
+- [liberarNo](arvore-n-aria.c#L80)
+- [atribuirReferencia](arvore-n-aria.c#L102)
 
-- ✅ Inserir um indivíduo
-  - Especificando se ele será:
-    - Pai
-    - Mãe
-    - Irmão
+Resumo:
 
-- 🌳 Imprimir toda a árvore genealógica
+1. `atribuirReferencia` troca um ponteiro com seguranca.
+2. Antes de trocar, ela faz `reterNo(novoValor)` (incrementa `refQuant` do novo alvo).
+3. Depois de trocar, ela chama `liberarNo(valorAntigo)` para soltar a referencia antiga.
+4. `liberarNo` decrementa `refQuant`; so libera de fato quando chega a zero.
 
-- 🔍 Buscar um familiar
+Por que nao entra em loop infinito:
 
-- 👨 Inserir pai de um indivíduo
+- `atribuirReferencia` retorna imediatamente se `valorAntigo == novoValor`.
+- Em `liberarNo`, ao limpar `pai/mae/proximoIrmao`, cada campo e setado para `NULL` via `atribuirReferencia`; na proxima passagem nao existe mais referencia para processar naquele campo.
+- O `refQuant` impede liberar no ainda referenciado por outros caminhos da arvore.
 
-- 👩 Inserir mãe de um indivíduo
+## Uso rapido
 
----
+Compilar app principal:
 
-## 📈 Regras Importantes
+```bash
+gcc -Wall -Wextra -pedantic -std=c11 main.c arvore-n-aria.c -o main
+```
 
-- A árvore **não armazena filhos**, apenas os **pais**.
-- Um indivíduo pode ter:
-  - Nenhum irmão
-  - Um ou mais irmãos
-  - Irmãos com os mesmos pais ou diferentes
-- A árvore pode crescer indefinidamente (enquanto houver memória disponível).
-- Pais também podem ter seus próprios pais e irmãos, formando múltiplos níveis.
+Compilar teste simples:
 
----
-
-## 💻 Linguagem
-
-- O projeto pode ser desenvolvido em:
-  - **C**
-  - **C++** *(recomendado devido ao uso de strings)*
-
----
-
-## 📦 Entrega
-
-- 📅 Data: **08/04**
-- 📌 Entregar:
-  - Código-fonte completo
-  - Apresentação do funcionamento
-
-> ❌ Não é necessário relatório.
-
----
-
-## 🖼️ Exemplo
-
-A estrutura da árvore segue o modelo apresentado na imagem fornecida (`ex1.png`).
-
----
-
-## 🚀 Objetivo
-
-Praticar:
-
-- Estruturas de dados (árvores N-árias)
-- Manipulação de ponteiros/referências
-- Organização de dados hierárquicos
-
----
-
-Boa implementação! 💡
+```bash
+gcc -Wall -Wextra -pedantic -std=c11 testes.c arvore-n-aria.c -o testes
+```
