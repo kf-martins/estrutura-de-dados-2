@@ -5,6 +5,11 @@
 
 int proximoId = 1;
 
+static void liberarNo(No *no);
+static void reterNo(No *no);
+static void atribuirReferencia(No **campo, No *novoValor);
+static int buscaIrmaoAux(No *raiz, int idIrmao, No **anterior, No **alvo);
+
 Date data(int dia, int mes, int ano) {
     Date d;
     d.dia = dia;
