@@ -15,8 +15,11 @@ typedef struct no {
 Node* criarNo(ElementType key);
 Node* rotacaoL(Node* p);
 Node* rotacaoR(Node* p);
+Node* buscaBinaria(Node* raiz, ElementType ch);
 
 int height(Node* r);
 int max(int a, int b);
+
+void inserirAVL(Node** pp, ElementType ch, int *alterou);
 
 #endif

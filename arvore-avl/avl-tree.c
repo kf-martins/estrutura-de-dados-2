@@ -87,6 +87,74 @@ Node* rotacaoR(Node* p) {
     }
 }
 
+void inserirAVL(Node **pp, ElementType ch, int *alterou) {
+    Node* p = *pp;
+    
+    if(!p) { // raiz null -> inserir na raiz | encontrou o local para inserir (recursivo)
+        *alterou = 1;
+        *pp = criarNo(ch);
+    } else {
+        if(ch == p->ch) // igual
+            *alterou = 0;
+
+        else { 
+            if(ch < p->ch) {
+                inserirAVL(&(p->left), ch, alterou);
+                if(*alterou) {
+                    switch(p->bal) {
+                        case 1: 
+                            p->bal = 0;
+                            *alterou = 0;
+                            break;
+                        case 0:
+                            p->bal = -1;
+                            // *alterou = 1;
+                            break;
+                        case -1: 
+                            *pp = rotacaoL(p);
+                            *alterou = 0;
+                            break; 
+                    }
+                }
+
+            } else {
+                inserirAVL(&(p->right), ch, alterou);
+                if(*alterou) {
+                    switch(p->bal) {
+                        case -1:
+                            p->bal = 0;
+                            *alterou = 0;
+                            break;
+                        case 0:
+                            p->bal = 1;
+                            break;
+                        case 1:
+                            *pp = rotacaoR(p);
+                            *alterou = 0;
+                            break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+Node* buscaBinaria(Node* raiz, ElementType ch) {
+    if(!raiz) return NULL;
+    if(raiz->ch == ch)
+        return raiz;
+    
+    if(ch > raiz->ch)
+        return buscaBinaria(raiz->right, ch);
+    
+    return buscaBinaria(raiz->left, ch);
+}
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-#include "n-tree.h"
+#include "nary-tree.h"
 
 ElementType stdElement = 0;
 
