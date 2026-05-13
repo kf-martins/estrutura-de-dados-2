@@ -156,9 +156,18 @@ Node* buscaBinaria(Node* raiz, ElementType ch) {
 
 
 
+void destruirAVLaux(Node* raiz) {
+    if(raiz) {
+        destruirAVLaux(raiz->left);
+        destruirAVLaux(raiz->right);
+        free(raiz);
+    }
+}
 
-
-
+void destruirAVL(Node** raiz) {
+    destruirAVLaux(raiz);
+    *raiz = NULL;
+}
 
 
 // UTILS
