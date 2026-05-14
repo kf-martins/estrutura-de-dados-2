@@ -259,6 +259,7 @@ bool excluirAVL(PONT* raiz, TIPOCHAVE ch, bool* alterou){
       ch = substituto->chave; // continua o codigo excluindo o substituto
     }
   }
+  
   bool res; // variável para guardar o resultado da exclusão recursiva.
   if (ch > atual->chave) {
     res = excluirAVL(&(atual->dir), ch, alterou); // chama recursão a direita.
